@@ -27,7 +27,7 @@ public class Cryptor : StreamCryptor
     */
     public func update(data: NSData) -> Cryptor?
     {
-        update(data.bytes, byteCount: UInt(data.length))
+        update(data.bytes, byteCount: Int(data.length))
         return self.status == Status.Success ? self : nil
     }
     /**
@@ -39,7 +39,7 @@ public class Cryptor : StreamCryptor
     */
     public func update(byteArray: [UInt8]) -> Cryptor?
     {
-        update(byteArray, byteCount: UInt(byteArray.count))
+        update(byteArray, byteCount: Int(byteArray.count))
         return self.status == Status.Success ? self : nil
     }
     /**
@@ -52,7 +52,7 @@ public class Cryptor : StreamCryptor
     */
     public func update(string: String) -> Cryptor?
     {
-        update(string, byteCount: UInt(string.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)))
+        update(string, byteCount: Int(string.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)))
         return self.status == Status.Success ? self : nil
     }
     /**
@@ -62,10 +62,10 @@ public class Cryptor : StreamCryptor
     */
     public func final() -> [UInt8]?
     {
-        var byteCount = Int(self.getOutputLength(0, isFinal: true))
+        var byteCount = Int(getOutputLength(0, isFinal: true))
         var dataOut = Array<UInt8>(count:byteCount, repeatedValue:0)
         var dataOutAvailable = UInt(dataOut.count)
-        var dataOutMoved = UInt(0)
+        var dataOutMoved = Int(0)
         (dataOutMoved, self.status) = final(&dataOut)
         if(self.status != Status.Success) {
             return nil
@@ -83,12 +83,12 @@ public class Cryptor : StreamCryptor
         
         :returns: this Cryptor object or nil if an error occurs (for optional chaining)
     */
-    public func update(buffer: UnsafePointer<Void>, byteCount: UInt) -> Cryptor?
+    public func update(buffer: UnsafePointer<Void>, byteCount: Int) -> Cryptor?
     {
-        var outputLength = Int(self.getOutputLength(byteCount, isFinal: false))
+        var outputLength = Int(getOutputLength(byteCount, isFinal: false))
         var dataOut = Array<UInt8>(count:outputLength, repeatedValue:0)
-        var dataOutMoved = UInt(0)
-        update(buffer, byteCountIn: byteCount, bufferOut: &dataOut, byteCapacityOut: UInt(dataOut.count), byteCountOut: &dataOutMoved)
+        var dataOutMoved = Int(0)
+        update(buffer, byteCountIn: byteCount, bufferOut: &dataOut, byteCapacityOut: Int(dataOut.count), byteCountOut: &dataOutMoved)
         if(self.status != Status.Success) {
             return nil
         }

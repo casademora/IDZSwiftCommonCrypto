@@ -139,7 +139,7 @@ public class StreamCryptor
     public convenience init(operation: Operation, algorithm: Algorithm, options: Options, key: [UInt8],
         iv : [UInt8])
     {
-        self.init(operation:operation, algorithm:algorithm, options:options, keyBuffer:key, keyByteCount:UInt(key.count), ivBuffer:iv)
+        self.init(operation:operation, algorithm:algorithm, options:options, keyBuffer:key, keyByteCount:Int(key.count), ivBuffer:iv)
     }
     /**
         Creates a new StreamCryptor
@@ -152,7 +152,7 @@ public class StreamCryptor
     public convenience init(operation: Operation, algorithm: Algorithm, options: Options, key: String,
         iv : String)
     {
-        self.init(operation:operation, algorithm:algorithm, options:options, keyBuffer:key, keyByteCount:UInt(key.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), ivBuffer:iv)
+        self.init(operation:operation, algorithm:algorithm, options:options, keyBuffer:key, keyByteCount:Int(key.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), ivBuffer:iv)
     }
     /**
         Add the contents of an Objective-C NSData buffer to the current encryption/decryption operation.
@@ -161,11 +161,11 @@ public class StreamCryptor
         :param: byteArrayOut output data
         :returns: a tuple containing the number of output bytes produced and the status (see Status)
     */
-    public func update(dataIn: NSData, inout byteArrayOut: [UInt8]) -> (UInt, Status)
+    public func update(dataIn: NSData, inout byteArrayOut: [UInt8]) -> (Int, Status)
     {
         var dataOutAvailable = UInt(byteArrayOut.count)
-        var dataOutMoved = UInt(0)
-        update(dataIn.bytes, byteCountIn: UInt(dataIn.length), bufferOut: &byteArrayOut, byteCapacityOut: UInt(byteArrayOut.count), byteCountOut: &dataOutMoved)
+        var dataOutMoved = Int(0)
+        update(dataIn.bytes, byteCountIn: Int(dataIn.length), bufferOut: &byteArrayOut, byteCapacityOut: Int(byteArrayOut.count), byteCountOut: &dataOutMoved)
         return (dataOutMoved, self.status)
     }
     /**
@@ -175,11 +175,11 @@ public class StreamCryptor
         :param: byteArrayOut output data
         :returns: a tuple containing the number of output bytes produced and the status (see Status)
     */
-    public func update(byteArrayIn: [UInt8], inout byteArrayOut: [UInt8]) -> (UInt, Status)
+    public func update(byteArrayIn: [UInt8], inout byteArrayOut: [UInt8]) -> (Int, Status)
     {
         var dataOutAvailable = UInt(byteArrayOut.count)
-        var dataOutMoved = UInt(0)
-        update(byteArrayIn, byteCountIn: UInt(byteArrayIn.count), bufferOut: &byteArrayOut, byteCapacityOut: UInt(byteArrayOut.count), byteCountOut: &dataOutMoved)
+        var dataOutMoved = Int(0)
+        update(byteArrayIn, byteCountIn: Int(byteArrayIn.count), bufferOut: &byteArrayOut, byteCapacityOut: Int(byteArrayOut.count), byteCountOut: &dataOutMoved)
         return (dataOutMoved, self.status)
     }
     /**
@@ -189,11 +189,11 @@ public class StreamCryptor
         :param: byteArrayOut output data
         :returns: a tuple containing the number of output bytes produced and the status (see Status)
     */
-    public func update(stringIn: String, inout byteArrayOut: [UInt8]) -> (UInt, Status)
+    public func update(stringIn: String, inout byteArrayOut: [UInt8]) -> (Int, Status)
     {
         var dataOutAvailable = UInt(byteArrayOut.count)
-        var dataOutMoved = UInt(0)
-        update(stringIn, byteCountIn: UInt(stringIn.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), bufferOut: &byteArrayOut, byteCapacityOut: UInt(byteArrayOut.count), byteCountOut: &dataOutMoved)
+        var dataOutMoved = Int(0)
+        update(stringIn, byteCountIn: Int(stringIn.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), bufferOut: &byteArrayOut, byteCapacityOut: Int(byteArrayOut.count), byteCountOut: &dataOutMoved)
         return (dataOutMoved, self.status)
     }
     /**
@@ -208,11 +208,11 @@ public class StreamCryptor
         :param: byteArrayOut the output bffer        
         :returns: a tuple containing the number of output bytes produced and the status (see Status)
     */
-    public func final(inout byteArrayOut: [UInt8]) -> (UInt, Status)
+    public func final(inout byteArrayOut: [UInt8]) -> (Int, Status)
     {
         var dataOutAvailable = UInt(byteArrayOut.count)
-        var dataOutMoved = UInt(0)
-        final(&byteArrayOut, byteCapacityOut: UInt(byteArrayOut.count), byteCountOut: &dataOutMoved)
+        var dataOutMoved = Int(0)
+        final(&byteArrayOut, byteCapacityOut: Int(byteArrayOut.count), byteCountOut: &dataOutMoved)
         return (dataOutMoved, self.status)
     }
     
@@ -225,7 +225,7 @@ public class StreamCryptor
         :param: ivBuffer initialization vector buffer
     */
     public init(operation: Operation, algorithm: Algorithm, options: Options, keyBuffer: UnsafePointer<Void>,
-        keyByteCount: UInt, ivBuffer: UnsafePointer<Void>)
+        keyByteCount: Int, ivBuffer: UnsafePointer<Void>)
     {
         let rawStatus = CCCryptorCreate(operation.nativeValue(), algorithm.nativeValue(), CCOptions(options.toRaw()), keyBuffer, keyByteCount, ivBuffer, context)
         if let status = Status.fromRaw(rawStatus)
@@ -246,7 +246,7 @@ public class StreamCryptor
         :param: outByteCount on successful completion, the number of bytes written to the output buffer
         :returns: 
     */
-    public func update(bufferIn: UnsafePointer<Void>, byteCountIn: UInt, bufferOut: UnsafeMutablePointer<Void>, byteCapacityOut : UInt, inout byteCountOut : UInt) -> Status
+    public func update(bufferIn: UnsafePointer<Void>, byteCountIn: Int, bufferOut: UnsafeMutablePointer<Void>, byteCapacityOut : Int, inout byteCountOut : Int) -> Status
     {
         if(self.status == Status.Success)
         {
@@ -277,7 +277,7 @@ public class StreamCryptor
         :param: outByteCapacity capacity of the output buffer in bytes
         :param: outByteCount on successful completion, the number of bytes written to the output buffer
     */
-    public func final(bufferOut: UnsafeMutablePointer<Void>, byteCapacityOut : UInt, inout byteCountOut : UInt) -> Status
+    public func final(bufferOut: UnsafeMutablePointer<Void>, byteCapacityOut : Int, inout byteCountOut : Int) -> Status
     {
         if(self.status == Status.Success)
         {
@@ -301,7 +301,7 @@ public class StreamCryptor
         :param: inputByteCount number of bytes that will be input.
         :param: isFinal true if buffer to be input will be the last input buffer, false otherwise.
     */
-    public func getOutputLength(inputByteCount : UInt, isFinal : Bool = false) -> UInt
+    public func getOutputLength(inputByteCount : Int, isFinal : Bool = false) -> Int
     {
         return CCCryptorGetOutputLength(context.memory, inputByteCount, isFinal)
     }
